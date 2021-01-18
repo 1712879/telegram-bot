@@ -1,0 +1,29 @@
+{
+     "name": "base",
+     "version": "1.0.0",
+     "description": "base code backend",
+     "main": "server.js",
+     "scripts": {
+          "dev": "nodemon src/server.js",
+          "start": "node src/server.js",
+          "test": "echo \"Error: no test specified\" && exit 1",
+          "build": "docker-compose build",
+          "docker": "docker-compose up"
+     },
+     "author": "Tuan Phan",
+     "license": "ISC",
+     "dependencies": {
+          "body-parser": "^1.19.0",
+          "dotenv": "^8.2.0",
+          "express": "^4.17.1",
+          "mgr-swagger-express": "0.0.6",
+          "mongoose": "^5.10.5",
+          "morgan": "^1.10.0",
+          "node-cron": "^2.0.3",
+          "node-telegram-bot-api": "^0.51.0",
+          "nodemon": "^2.0.4",
+          "swagger-jsdoc": "^4.0.0",
+          "swagger-ui-express": "^4.1.4",
+          "telegraf": "^4.0.1"
+     }
+}
