@@ -37,12 +37,16 @@ app.use((err, req, res, next) => {
      });
 });
 
-cron.schedule('50 23 * * *', () => {
-     bot.sendMessage(TELEGRAM_ID, 'Ngủ đi anh chủ đẹp trai');
+cron.schedule('00 23 * * *', () => {
+     bot.sendMessage(TELEGRAM_ID, 'Ngủ đi anh Bin đẹp trai');
 }, {timezone: 'Asia/Bangkok'});
 
-cron.schedule('59 7 * * *', () => {
-     bot.sendMessage(TELEGRAM_ID, 'Dậy đi anh chủ :))');
+cron.schedule('0 8 * * *', () => {
+     bot.sendMessage(TELEGRAM_ID, 'Dậy đi anh Bin :))');
+}, {timezone: 'Asia/Bangkok'});
+
+cron.schedule('0 8 * * SUN', () => {
+     bot.sendMessage(TELEGRAM_ID, 'Hôm nay là Chủ Nhật, xõa đi anh Bin :))');
 }, {timezone: 'Asia/Bangkok'});
 
 const bot = new TelegramBot(BOT_TOKEN, {polling: true});
