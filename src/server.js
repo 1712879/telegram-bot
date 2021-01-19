@@ -23,7 +23,7 @@ app.get('/photo/logo', async (req, res) =>{
      return res.sendFile(`${__dirname}/public/images/botlogo.jpg`)
 })
 
-app.post('/:token', (req, res) => {
+app.post(`/bot${BOT_TOKEN}`, (req, res) => {
      console.log('xin nghe anh Bin :)')
      bot.sendMessage(TELEGRAM_ID, 'Dậy đi anh Bin :))');
      return res.status(200),json({});
@@ -61,9 +61,14 @@ cron.schedule('0 12 * * *', () => {
 }, {timezone: 'Asia/Bangkok'});
 
 let bot;
+const options = {
+     webHook: {
+       port: PORT
+     }
+   };
 if(NODE_ENV === 'production'){
-     bot = new TelegramBot(token);
-     bot.setWebHook(`${HEROKU_URL}${BOT_TOKEN}`);
+     bot = new TelegramBot(BOT_TOKEN, options);
+     bot.setWebHook(`${HEROKU_URL}/token${BOT_TOKEN}`);
 }else{
      bot = new TelegramBot(BOT_TOKEN, {polling: true});
 }
