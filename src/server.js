@@ -6,20 +6,27 @@ const morgan = require("morgan");
 const cron = require("node-cron");
 const request = require('request');
 const TelegramBot = require('node-telegram-bot-api');
-const { PORT, TELEGRAM_ID, BOT_TOKEN } = config;
+const { json } = require("body-parser");
+const { PORT, TELEGRAM_ID, BOT_TOKEN, NODE_ENV, HEROKU_URL } = config;
 const { G9_GIF } = constant;
-
 
 const app = express();
 app.use(morgan(":method :url :status - :response-time ms"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 app.get("/", (req, res) => {
      return res.send("Hello world!");
 });
 
 app.get('/photo/logo', async (req, res) =>{
      return res.sendFile(`${__dirname}/public/images/botlogo.jpg`)
+})
+
+app.post('/:token', (req, res) => {
+     console.log('xin nghe anh Bin :)')
+     bot.sendMessage(TELEGRAM_ID, 'Dậy đi anh Bin :))');
+     return res.status(200),json({});
 })
 
 //* =============================================
@@ -49,7 +56,18 @@ cron.schedule('0 8 * * SUN', () => {
      bot.sendMessage(TELEGRAM_ID, 'Hôm nay là Chủ Nhật, xõa đi anh Bin :))');
 }, {timezone: 'Asia/Bangkok'});
 
-const bot = new TelegramBot(BOT_TOKEN, {polling: true});
+cron.schedule('0 12 * * *', () => {
+     bot.sendMessage(TELEGRAM_ID, 'Dậy đi anh Bin :))');
+}, {timezone: 'Asia/Bangkok'});
+
+let bot;
+if(NODE_ENV === 'production'){
+     bot = new TelegramBot(token);
+     bot.setWebHook(`${HEROKU_URL}${BOT_TOKEN}`);
+}else{
+     bot = new TelegramBot(BOT_TOKEN, {polling: true});
+}
+
 
 // send message welcome
 bot.on('message', (msg) => {
