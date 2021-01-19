@@ -68,7 +68,7 @@ const options = {
    };
 if(NODE_ENV === 'production'){
      bot = new TelegramBot(BOT_TOKEN, options);
-     bot.setWebHook(`${HEROKU_URL}/token${BOT_TOKEN}`);
+     bot.setWebHook(`${HEROKU_URL}/bot${BOT_TOKEN}`);
 }else{
      bot = new TelegramBot(BOT_TOKEN, {polling: true});
 }
