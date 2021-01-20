@@ -4,11 +4,9 @@ const constant = require("./constant/constant");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cron = require("node-cron");
-const request = require('request');
 const TelegramBot = require('node-telegram-bot-api');
-const { json } = require("body-parser");
 const { PORT, TELEGRAM_ID, BOT_TOKEN, NODE_ENV, HEROKU_URL } = config;
-const { G9_GIF } = constant;
+// const ggSheet = require('./ggSheet');
 
 const app = express();
 app.use(morgan(":method :url :status - :response-time ms"));
@@ -23,19 +21,7 @@ app.get('/photo/logo', async (req, res) =>{
      return res.sendFile(`${__dirname}/public/images/botlogo.jpg`)
 })
 
-app.post(`/bot${BOT_TOKEN}`, (req, res) => {
-     console.log('xin nghe anh Bin :)')
-     bot.sendMessage(TELEGRAM_ID, 'Dậy đi anh Bin :))');
-     return res.status(200),json({});
-})
-
 //* =============================================
-app.all("*", (req, res) => {
-     return res.json({
-          status: 404,
-          message: `Can't find ${req.originalUrl}`,
-     });
-});
 //* Error handling
 app.use((err, req, res, next) => {
      return res.status(500).json({
@@ -57,28 +43,37 @@ cron.schedule('0 8 * * SUN', () => {
 }, {timezone: 'Asia/Bangkok'});
 
 cron.schedule('0 12 * * *', () => {
-     bot.sendMessage(TELEGRAM_ID, 'Dậy đi anh Bin :))');
+     bot.sendMessage(TELEGRAM_ID, 'Chúc anh Bin ăn trưa ngon miệng nhé :))');
+}, {timezone: 'Asia/Bangkok'});
+
+cron.schedule('0 21 * * *', () => {
+     bot.sendMessage(TELEGRAM_ID, 'Chúc anh Bin ăn trưa ngon miệng nhé :))');
 }, {timezone: 'Asia/Bangkok'});
 
 let bot;
-const options = {
-     webHook: {
-       port: PORT
-     }
-   };
 if(NODE_ENV === 'production'){
-     bot = new TelegramBot(BOT_TOKEN, options);
-     bot.setWebHook(`${HEROKU_URL}/bot${BOT_TOKEN}`);
+     bot = new TelegramBot(BOT_TOKEN);
+     bot.setWebHook(`${HEROKU_URL}/bot/${BOT_TOKEN}`);
 }else{
      bot = new TelegramBot(BOT_TOKEN, {polling: true});
 }
 
+app.post(`/bot/:token`, (req, res) => {
+     const message = `TP_BOT xin chào..`
+     bot.sendMessage(TELEGRAM_ID, message, { parse_mode: 'HTML'});
+     return res.sendStatus(200);
+})
 
 // send message welcome
-bot.on('message', (msg) => {
+bot.on('message', function (msg) {
   const chatId = msg.chat.id;
   bot.sendMessage(chatId, 'TP_BOT xin chào.');
 });
 
-
+app.all("*", (req, res) => {
+     return res.json({
+          status: 404,
+          message: `Can't find ${req.originalUrl}`,
+     });
+});
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
