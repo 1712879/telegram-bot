@@ -6,7 +6,9 @@ const morgan = require("morgan");
 const cron = require("node-cron");
 const TelegramBot = require('node-telegram-bot-api');
 const { PORT, TELEGRAM_ID, BOT_TOKEN, NODE_ENV, HEROKU_URL } = config;
+const timeTables = require('./timetables.json');
 // const ggSheet = require('./ggSheet');
+
 
 const app = express();
 app.use(morgan(":method :url :status - :response-time ms"));
@@ -30,25 +32,11 @@ app.use((err, req, res, next) => {
      });
 });
 
-cron.schedule('00 23 * * *', () => {
-     bot.sendMessage(TELEGRAM_ID, 'Ngủ đi anh Bin đẹp trai');
-}, {timezone: 'Asia/Bangkok'});
-
-cron.schedule('0 8 * * *', () => {
-     bot.sendMessage(TELEGRAM_ID, 'Dậy đi anh Bin :))');
-}, {timezone: 'Asia/Bangkok'});
-
-cron.schedule('0 8 * * SUN', () => {
-     bot.sendMessage(TELEGRAM_ID, 'Hôm nay là Chủ Nhật, xõa đi anh Bin :))');
-}, {timezone: 'Asia/Bangkok'});
-
-cron.schedule('0 12 * * *', () => {
-     bot.sendMessage(TELEGRAM_ID, 'Chúc anh Bin ăn trưa ngon miệng nhé :))');
-}, {timezone: 'Asia/Bangkok'});
-
-cron.schedule('0 21 * * *', () => {
-     bot.sendMessage(TELEGRAM_ID, 'Chúc anh Bin ăn trưa ngon miệng nhé :))');
-}, {timezone: 'Asia/Bangkok'});
+timeTables.forEach(time => {
+     cron.schedule(time.time, () => {
+          bot.sendMessage(TELEGRAM_ID, time.message);
+     }, {timezone: 'Asia/Bangkok'});
+})
 
 let bot;
 if(NODE_ENV === 'production'){

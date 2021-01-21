@@ -1,0 +1,22 @@
+[
+    {
+        "time": "0 23 * * *",
+        "message": "Ngủ ngon nhé anh Bin đẹp trai."
+    },
+    {
+        "time": "0 8 * * *",
+        "message": "Buổi sáng tốt lành nhé."
+    },
+    {
+        "time": "0 8 * * SUN",
+        "message": "Hôm nay là Chủ Nhật, xõa đi anh Bin :))"
+    },
+    {
+        "time": "0 12 * * *",
+        "message": "Anh Bin ăn trưa ngon miệng nhé :))"
+    },
+    {
+        "time": "0 21 * * *",
+        "message": "Bin đang làm gì đó???"
+    }
+]
