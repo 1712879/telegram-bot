@@ -1,6 +1,5 @@
 const express = require("express");
 const config = require("./config/config");
-const constant = require("./constant/constant");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cron = require("node-cron");
