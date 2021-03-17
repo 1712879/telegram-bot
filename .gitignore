@@ -1,6 +1,7 @@
 
 # dotenv environment variables file
 .env
+.env.production
 # package lock file
 package-lock.json
 # compiled output
