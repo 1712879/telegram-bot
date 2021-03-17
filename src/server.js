@@ -6,8 +6,9 @@ const cron = require("node-cron");
 const TelegramBot = require('node-telegram-bot-api');
 const { PORT, TELEGRAM_ID, BOT_TOKEN, NODE_ENV, HEROKU_URL } = config;
 const timeTables = require('./timetables.json');
-const ggSheet = require('./ggSheet');
 const ngrok = require('ngrok');
+const { TYPES } = require("./constant/constant");
+// const points = require('./points/points');
 
 const app = express();
 app.use(morgan(":method :url :status - :response-time ms"));
@@ -41,7 +42,7 @@ let bot;
           const url = await ngrok.connect({ port: PORT });
           bot = new TelegramBot(BOT_TOKEN);
           bot.setWebHook(`${url}/bot/${BOT_TOKEN}`);
-     } else {
+     }else{
           bot = new TelegramBot(BOT_TOKEN, { polling: true });
      }
 
@@ -56,17 +57,39 @@ let bot;
      bot.on('message', function (msg)
      {
           const chatId = msg.chat.id;
-          console.log(`msg`, msg)
           bot.sendMessage(chatId, 'TP_BOT xin chào.');
      });
 })();
 
-app.post(`/bot/:token`, (req, res) =>
+app.post(`/bot/:token`, async (req, res) =>
 {
-     const message = `TP_BOT xin chào..👋`;
-     bot.sendMessage(TELEGRAM_ID, message, { parse_mode: 'HTML' });
+     const {message = ''} = req.body;
+     const responseText = await handleBody(message?.text)
+     bot.sendMessage(TELEGRAM_ID, responseText, { parse_mode: 'HTML' });
      return res.sendStatus(200);
 })
+
+const handleBody = async (body) => {
+     try {
+          const [type = '', code = '', task = '', point = 0, link = ''] = body?.split('\n');
+          let responseText = '';
+          switch (type.toUpperCase()) {
+               case TYPES.TASKS:
+                    await points.insertPoint({code, task, point, link})
+                    responseText = 'thêm task thành công';
+                    break;
+               case TYPES.KPI:
+                    const total = await points.calculatorPoint()
+                    responseText = `KPI: ${total}`;
+                    break;
+               default:
+                    break;
+          }
+          return responseText || 'Không hiểu yêu cầu'
+     } catch (error) {
+          return 'Lỗi thực hiện';
+     }
+}
 
 app.all("*", (req, res) =>
 {
