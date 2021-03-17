@@ -8,7 +8,7 @@ const { PORT, TELEGRAM_ID, BOT_TOKEN, NODE_ENV, HEROKU_URL } = config;
 const timeTables = require('./timetables.json');
 const ngrok = require('ngrok');
 const { TYPES } = require("./constant/constant");
-// const points = require('./points/points');
+const points = require('./points/points');
 
 const app = express();
 app.use(morgan(":method :url :status - :response-time ms"));
@@ -42,7 +42,7 @@ let bot;
           const url = await ngrok.connect({ port: PORT });
           bot = new TelegramBot(BOT_TOKEN);
           bot.setWebHook(`${url}/bot/${BOT_TOKEN}`);
-     }else{
+     } else {
           bot = new TelegramBot(BOT_TOKEN, { polling: true });
      }
 
@@ -63,19 +63,20 @@ let bot;
 
 app.post(`/bot/:token`, async (req, res) =>
 {
-     const {message = ''} = req.body;
+     const { message = '' } = req.body;
      const responseText = await handleBody(message?.text)
      bot.sendMessage(TELEGRAM_ID, responseText, { parse_mode: 'HTML' });
      return res.sendStatus(200);
 })
 
-const handleBody = async (body) => {
+const handleBody = async (body) =>
+{
      try {
           const [type = '', code = '', task = '', point = 0, link = ''] = body?.split('\n');
           let responseText = '';
           switch (type.toUpperCase()) {
                case TYPES.TASKS:
-                    await points.insertPoint({code, task, point, link})
+                    await points.insertPoint({ code, task, point, link })
                     responseText = 'thêm task thành công';
                     break;
                case TYPES.KPI:
@@ -87,6 +88,7 @@ const handleBody = async (body) => {
           }
           return responseText || 'Không hiểu yêu cầu'
      } catch (error) {
+          console.log(`error`, error)
           return 'Lỗi thực hiện';
      }
 }
