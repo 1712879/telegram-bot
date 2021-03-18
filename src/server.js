@@ -54,10 +54,12 @@ let bot;
           }, { timezone: 'Asia/Bangkok' });
      })
      // send message welcome
-     bot.on('message', function (msg)
+     bot.on('message', async function (msg)
      {
           const chatId = msg.chat.id;
-          bot.sendMessage(chatId, 'TP_BOT xin chào.');
+          const { text = '' } = msg;
+          const responseText = await handleBody(text)
+          bot.sendMessage(chatId, responseText);
      });
 })();
 
