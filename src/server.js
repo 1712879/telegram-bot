@@ -58,37 +58,48 @@ let bot;
      {
           const chatId = msg.chat.id;
           const { text = '' } = msg;
-          const responseText = await handleBody(text)
-          bot.sendMessage(chatId, responseText);
+          await handleBody(chatId, text)
+          
      });
 })();
 
 app.post(`/bot/:token`, async (req, res) =>
 {
      const { message = '' } = req.body;
-     const responseText = await handleBody(message?.text)
-     bot.sendMessage(TELEGRAM_ID, responseText, { parse_mode: 'HTML' });
+     // const responseText = await handleBody(message?.text)
+     // bot.sendMessage(TELEGRAM_ID, responseText, { parse_mode: 'HTML' });
      return res.sendStatus(200);
 })
 
-const handleBody = async (body) =>
+const handleBody = async (chatId, body) =>
 {
      try {
-          const [type = '', code = '', task = '', point = 0, link = ''] = body?.split('\n');
+          const [type = '', ...data] = body?.split('\n');
           let responseText = '';
           switch (type.toUpperCase()) {
                case TYPES.TASKS:
-                    await points.insertPoint({ code, task, point, link })
+                    await points.insertPoint({ code: data[0], task: data[1], point: data[2], link: data[3] })
                     responseText = 'thêm task thành công';
+                    await bot.sendMessage(chatId, responseText);
+                    responseText = `${await points.calculatorPoint()}`;
+                    await bot.sendMessage(chatId, responseText);
                     break;
                case TYPES.KPI:
-                    const total = await points.calculatorPoint()
-                    responseText = `KPI: ${total}`;
+                    responseText = `${await points.calculatorPoint()}`;
+                    await bot.sendMessage(chatId, responseText);
+                    break;
+               case TYPES.SET:
+                    responseText = await points.updateMetadataPoint(data);
+                    await bot.sendMessage(chatId, responseText);
+                    break;
+               case TYPES.METADATA:
+                    responseText = await points.readMetadata();
+                    await bot.sendMessage(chatId, JSON.stringify(responseText, null, 2));
                     break;
                default:
                     break;
           }
-          return responseText || 'Không hiểu yêu cầu'
+          // await bot.sendMessage(chatId, responseText || 'Không hiểu yêu cầu');
      } catch (error) {
           console.log(`error`, error)
           return 'Lỗi thực hiện';
