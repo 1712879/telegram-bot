@@ -8,7 +8,12 @@ const getNewsDaily = async (url) => {
     if(!url) return;
     try {
         const newUrl = url.includes('http') ? url : `https://${url}`
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({args: [
+            "--incognito",
+            "--no-sandbox",
+            "--single-process",
+            "--no-zygote"
+        ],});
         const page = await browser.newPage();
         await page.setViewport({width: 1280, height: 1024});
         await page.goto(newUrl);
