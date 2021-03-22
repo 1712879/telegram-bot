@@ -6,6 +6,7 @@ const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const HEROKU_URL = process.env.HEROKU_URL || '';
 const SHEET_POINT = process.env.SHEET_POINT || '';
+const AUTH_TOKEN_NGROK = process.env.AUTH_TOKEN_NGROK || '';
 
 module.exports = {
      PORT,
@@ -13,5 +14,6 @@ module.exports = {
      BOT_TOKEN,
      NODE_ENV,
      HEROKU_URL,
-     SHEET_POINT
+     SHEET_POINT,
+     AUTH_TOKEN_NGROK
 };

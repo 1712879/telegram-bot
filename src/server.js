@@ -4,11 +4,12 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cron = require("node-cron");
 const TelegramBot = require('node-telegram-bot-api');
-const { PORT, TELEGRAM_ID, BOT_TOKEN, NODE_ENV, HEROKU_URL } = config;
-const timeTables = require('./timetables.json');
+const { PORT, TELEGRAM_ID, BOT_TOKEN, NODE_ENV, HEROKU_URL, AUTH_TOKEN_NGROK } = config;
+const {timeTables, fileOptions} = require('./timetables');
 const ngrok = require('ngrok');
 const { TYPES } = require("./constant/constant");
 const points = require('./points/points');
+const fs = require('fs')
 
 const app = express();
 app.use(morgan(":method :url :status - :response-time ms"));
@@ -39,7 +40,8 @@ let bot;
 (async function ()
 {
      if (NODE_ENV === 'production') {
-          const url = await ngrok.connect({ port: PORT });
+          const url = await ngrok.connect({port: PORT});
+          console.log(`url`, url)
           bot = new TelegramBot(BOT_TOKEN);
           bot.setWebHook(`${url}/bot/${BOT_TOKEN}`);
      } else {
@@ -48,9 +50,12 @@ let bot;
 
      timeTables.forEach(time =>
      {
-          cron.schedule(time.time, () =>
+          cron.schedule(time.time, async () =>
           {
                bot.sendMessage(TELEGRAM_ID, time.message);
+               if(time?.handle){
+                    await time.handle(bot, TELEGRAM_ID);
+               }
           }, { timezone: 'Asia/Bangkok' });
      })
      // send message welcome
@@ -65,9 +70,9 @@ let bot;
 
 app.post(`/bot/:token`, async (req, res) =>
 {
-     const { message = '' } = req.body;
-     // const responseText = await handleBody(message?.text)
-     // bot.sendMessage(TELEGRAM_ID, responseText, { parse_mode: 'HTML' });
+     const { message } = req.body;
+     console.log(`req`, req.body)
+     await handleBody(message?.from?.id, message?.text)
      return res.sendStatus(200);
 })
 
@@ -97,6 +102,9 @@ const handleBody = async (chatId, body) =>
                     await bot.sendMessage(chatId, JSON.stringify(responseText, null, 2));
                     break;
                default:
+                    const stream = fs.createReadStream('src/public/gif/hello.gif');
+                    await bot.sendAnimation(chatId,stream,{} ,fileOptions);
+                    await bot.sendMessage(chatId, 'tuanphan-bot xin chào!.')
                     break;
           }
           // await bot.sendMessage(chatId, responseText || 'Không hiểu yêu cầu');
