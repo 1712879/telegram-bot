@@ -3,6 +3,7 @@ const TYPES = {
      TASKS:'TASKS',
      KPI: 'KPI',
      SET: 'SET',
-     METADATA: 'METADATA'
+     METADATA: 'METADATA',
+     NEWS:"NEWS"
 }
 module.exports = { G9_GIF, TYPES };
