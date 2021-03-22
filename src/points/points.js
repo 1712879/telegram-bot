@@ -54,12 +54,12 @@ const convertToJSON = (strArr) => {
 const convertToCSV = (object) => {
     let csvString = Object.entries(object).map(([key, value]) => {
         return `${key},${value}`;
-    }).join('\r\n')
+    }).join('\n')
     return csvString;
 }
 const readMetadata = () => {
     const data = fs.readFileSync('src/db.csv', 'utf8');
-    const strArr = data.split('\r\n');
+    const strArr = data.split('\n');
     strArr.shift()
     const objectConverted = convertToJSON(strArr);
     return objectConverted;
