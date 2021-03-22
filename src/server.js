@@ -40,8 +40,11 @@ let bot;
 (async function ()
 {
      if (NODE_ENV === 'production') {
+          bot = new TelegramBot(BOT_TOKEN);
+          bot.setWebHook(`${HEROKU_URL}/bot/${BOT_TOKEN}`);
+     }if (NODE_ENV === 'ngrok') {
           const url = await ngrok.connect({port: PORT});
-          console.log(`url`, url)
+          console.log(`url`, url);
           bot = new TelegramBot(BOT_TOKEN);
           bot.setWebHook(`${url}/bot/${BOT_TOKEN}`);
      } else {
