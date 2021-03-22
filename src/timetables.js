@@ -22,6 +22,7 @@ const getNewsDaily = async (url) => {
         await browser.close();
         return data;
     } catch (error) {
+        console.log(`error`, error)
         const stream = fs.createReadStream('src/public/gif/404.gif');
         return stream;
     }
