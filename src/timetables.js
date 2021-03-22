@@ -2,7 +2,27 @@ const fs = require('fs')
 const fileOptions = {
     contentType: 'image/gif',
   };
-module.exports = {timeTables: [
+
+  const puppeteer = require('puppeteer');
+const getNewsDaily = async (url) => {
+    if(!url) return;
+    try {
+        const newUrl = url.includes('http') ? url : `https://${url}`
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.setViewport({width: 1280, height: 1024});
+        await page.goto(newUrl);
+        await page.waitFor(500);
+        const data = await page.screenshot({width: 1280, height: 3500 });
+        await browser.close();
+        return data;
+    } catch (error) {
+        const stream = fs.createReadStream('src/public/gif/404.gif');
+        return stream;
+    }
+}
+module.exports = {
+    timeTables: [
     {
         "time": "0 23 * * *",
         "message": "Ngủ ngon nhé Tuấn Phan đẹp trai.",
@@ -34,5 +54,31 @@ module.exports = {timeTables: [
             const stream = fs.createReadStream('src/public/gif/lunch.gif');
             await bot.sendAnimation(chatId,stream,{} ,fileOptions)
         }
+    },
+    {
+        "time": "15 8 * * *",
+        "message": "Daily News",
+        handle: async (bot, chatId) => {
+            const stream = await getNewsDaily('https://zingnews.vn/');
+            await bot.sendPhoto(chatId,stream)
+        }
+    },
+    {
+        "time": "16 8 * * *",
+        "message": "Daily News",
+        handle: async (bot, chatId) => {
+            const stream = await getNewsDaily('https://genk.vn/');
+            await bot.sendPhoto(chatId,stream)
+        }
+    },
+    {
+        "time": "0 21 * * *",
+        "message": "Daily News",
+        handle: async (bot, chatId) => {
+            const stream = await getNewsDaily('https://dev.to/');
+            await bot.sendPhoto(chatId,stream)
+        }
     }
-], fileOptions}
+], 
+fileOptions,
+getNewsDaily}

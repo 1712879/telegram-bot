@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const cron = require("node-cron");
 const TelegramBot = require('node-telegram-bot-api');
 const { PORT, TELEGRAM_ID, BOT_TOKEN, NODE_ENV, HEROKU_URL, AUTH_TOKEN_NGROK } = config;
-const {timeTables, fileOptions} = require('./timetables');
+const {timeTables, fileOptions, getNewsDaily} = require('./timetables');
 const ngrok = require('ngrok');
 const { TYPES } = require("./constant/constant");
 const points = require('./points/points');
@@ -104,16 +104,20 @@ const handleBody = async (chatId, body) =>
                     responseText = await points.readMetadata();
                     await bot.sendMessage(chatId, JSON.stringify(responseText, null, 2));
                     break;
+               case TYPES.NEWS:
+                    const streamNews = await getNewsDaily(data[0]);
+                    await bot.sendPhoto(chatId, streamNews)
+                    break;
                default:
                     const stream = fs.createReadStream('src/public/gif/hello.gif');
                     await bot.sendAnimation(chatId,stream,{} ,fileOptions);
                     await bot.sendMessage(chatId, 'tuanphan-bot xin chào!.')
                     break;
           }
-          // await bot.sendMessage(chatId, responseText || 'Không hiểu yêu cầu');
      } catch (error) {
           console.log(`error`, error)
-          return 'Lỗi thực hiện';
+          const stream404 = fs.createReadStream('src/public/gif/404.gif');
+          await bot.sendAnimation(chatId,stream404,{} ,fileOptions);
      }
 }
 
