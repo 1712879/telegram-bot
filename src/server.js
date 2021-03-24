@@ -8,7 +8,7 @@ const { PORT, TELEGRAM_ID, BOT_TOKEN, NODE_ENV, HEROKU_URL, AUTH_TOKEN_NGROK } =
 const {timeTables, fileOptions, getNewsDaily} = require('./timetables');
 const ngrok = require('ngrok');
 const { TYPES } = require("./constant/constant");
-const points = require('./points/points');
+// const points = require('./points/points');
 const fs = require('fs')
 
 const app = express();
@@ -85,25 +85,25 @@ const handleBody = async (chatId, body) =>
           const [type = '', ...data] = body?.split('\n');
           let responseText = '';
           switch (type.toUpperCase()) {
-               case TYPES.TASKS:
-                    await points.insertPoint({ code: data[0], task: data[1], point: data[2], link: data[3] })
-                    responseText = 'thêm task thành công';
-                    await bot.sendMessage(chatId, responseText);
-                    responseText = `${await points.calculatorPoint()}`;
-                    await bot.sendMessage(chatId, responseText);
-                    break;
-               case TYPES.KPI:
-                    responseText = `${await points.calculatorPoint()}`;
-                    await bot.sendMessage(chatId, responseText);
-                    break;
-               case TYPES.SET:
-                    responseText = await points.updateMetadataPoint(data);
-                    await bot.sendMessage(chatId, responseText);
-                    break;
-               case TYPES.METADATA:
-                    responseText = await points.readMetadata();
-                    await bot.sendMessage(chatId, JSON.stringify(responseText, null, 2));
-                    break;
+               // case TYPES.TASKS:
+               //      await points.insertPoint({ code: data[0], task: data[1], point: data[2], link: data[3] })
+               //      responseText = 'thêm task thành công';
+               //      await bot.sendMessage(chatId, responseText);
+               //      responseText = `${await points.calculatorPoint()}`;
+               //      await bot.sendMessage(chatId, responseText);
+               //      break;
+               // case TYPES.KPI:
+               //      responseText = `${await points.calculatorPoint()}`;
+               //      await bot.sendMessage(chatId, responseText);
+               //      break;
+               // case TYPES.SET:
+               //      responseText = await points.updateMetadataPoint(data);
+               //      await bot.sendMessage(chatId, responseText);
+               //      break;
+               // case TYPES.METADATA:
+               //      responseText = await points.readMetadata();
+               //      await bot.sendMessage(chatId, JSON.stringify(responseText, null, 2));
+               //      break;
                case TYPES.NEWS:
                     const streamNews = await getNewsDaily(data[0]);
                     await bot.sendPhoto(chatId, streamNews)
